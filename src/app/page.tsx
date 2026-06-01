@@ -74,7 +74,8 @@ export default function Home() {
     lng: 100.555,
   });
 
-  // Onboarding walkthrough guide states
+  // Landing Page & Onboarding walkthrough guide states
+  const [showLanding, setShowLanding] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState(0);
 
@@ -447,6 +448,62 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* FULLSCREEN BRAND LANDING PAGE OVERLAY (Styled directly after the laundry app example) */}
+      <div
+        className={`fixed inset-0 z-[2500] bg-white flex flex-col justify-between items-center transition-transform duration-[750ms] ease-[cubic-bezier(0.85,0,0.15,1)] ${
+          showLanding ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
+        {/* Top Bar Greeting */}
+        <div className="w-full text-center pt-12 shrink-0 px-6">
+          <div className="flex justify-center mb-3">
+            <img
+              src="/logo.png"
+              alt="TidPlug Logo"
+              className="h-14 w-14 object-contain animate-pulse select-none"
+            />
+          </div>
+          <h1 className="text-[28px] font-extrabold text-stone-900 tracking-tight leading-none">
+            ยินดีต้อนรับสู่
+          </h1>
+          <h2 className="text-[22px] font-black text-brand-black tracking-tight mt-1.5 uppercase leading-none">
+            TIDPLUG
+          </h2>
+          <div className="h-[2px] bg-brand-yellow/60 w-16 mx-auto mt-4" />
+        </div>
+
+        {/* Central Digital Nomad 3D Hero Illustration */}
+        <div className="flex-1 flex items-center justify-center p-6 w-full max-w-sm shrink-0">
+          <img
+            src="/images/landing_hero.png"
+            alt="TidPlug Landing Hero"
+            className="w-full max-h-[280px] object-contain select-none animate-scale-in"
+          />
+        </div>
+
+        {/* Bottom Curved Wave Branding Banner (Sweeping Solid Black Curve) */}
+        <div className="w-full bg-brand-black text-white px-6 pt-10 pb-12 shrink-0 flex flex-col items-center justify-end text-center relative rounded-t-[3.5rem] shadow-[0_-12px_40px_rgba(0,0,0,0.18)] max-w-md mx-auto">
+          {/* Small accent slide handle */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-stone-700/60" />
+
+          <h3 className="font-extrabold text-brand-yellow text-xs tracking-widest uppercase mb-2">
+            Specialty Plug Finder
+          </h3>
+          
+          <h2 className="text-base font-extrabold text-white tracking-tight leading-snug px-3 mb-6">
+            ให้การหาที่ทำงานมีปลั๊กไฟเป็นเรื่องง่ายในทุกย่านคุณ
+          </h2>
+
+          {/* Primary Action Button */}
+          <button
+            onClick={() => setShowLanding(false)}
+            className="w-full bg-brand-yellow text-brand-black font-extrabold text-sm py-4 rounded-2xl shadow-lg active:scale-98 select-none transition-all hover:bg-yellow-400 cursor-pointer select-none animate-pulse font-sans tracking-wide"
+          >
+            ค้นหาพิกัดปลั๊กเลย!
+          </button>
+        </div>
+      </div>
 
     </div>
   );
