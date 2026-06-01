@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,14 @@ const notoSansThai = Noto_Sans_Thai({
 export const metadata: Metadata = {
   title: "tidplug — หาคาเฟ่มีปลั๊ก",
   description: "หาคาเฟ่ที่มีปลั๊กไฟใกล้คุณ ทำงานสะดวก ชิลๆ",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

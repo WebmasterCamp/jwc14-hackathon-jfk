@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
 import { Clock, MapPin, Wifi, WifiOff, Zap, ZapOff, Coffee, CheckCircle, AlertTriangle, Compass } from "lucide-react";
 import { cafes, Cafe, getHaversineDistance, formatDistance } from "@/lib/cafes";
@@ -39,21 +40,109 @@ const plugMeta: Record<
 // Simple onboarding walkthrough steps definitions
 const onboardingSteps = [
   {
-    title: "⚡ ค้นหาพิกัดปลั๊กไฟสุดฟิน",
-    desc: "ค้นหาจุดทำงานมีเครื่องดื่มดีๆ ที่เพียบพร้อมด้วยปลั๊กไฟจำนวนมาก (ป้ายสีเหลือง) พร้อมเช็คสัญญาณ WiFi แรงๆ ได้ทันทีรอบย่านคุณ",
-    icon: <Zap className="h-12 w-12 text-brand-black fill-brand-yellow shrink-0 mx-auto" />
+    title: "ค้นหาร้านใกล้ตัว",
+    desc: "ดูร้านที่มีปลั๊กและ WiFi รอบตัวคุณได้ทันที",
+    icon: <Zap className="h-10 w-10 text-brand-black fill-brand-yellow shrink-0 mx-auto" />
   },
   {
-    title: "⚠️ ตรวจสอบปลั๊กไฟชำรุด",
-    desc: "ร่วมรายงานจุดชำรุด (แนบรูปถ่ายหลักฐาน) เพื่อบอกสถานะกับเพื่อนๆ ในกลุ่ม หรือดูตราเครื่องหมายประทับรับรองอย่างเป็นทางการโดยร้านค้า",
-    icon: <AlertTriangle className="h-12 w-12 text-amber-500 fill-amber-100 shrink-0 mx-auto" />
+    title: "ดูข้อมูลสำคัญ",
+    desc: "เช็กเวลาเปิด ระยะทาง และสถานะของแต่ละร้าน",
+    icon: <AlertTriangle className="h-10 w-10 text-amber-500 fill-amber-100 shrink-0 mx-auto" />
   },
   {
-    title: "📍 นำทางเที่ยวทำงานในคลิกเดียว",
-    desc: "ตรวจดูระยะทางห่างจริงจากตัวคุณด้วยระบบจัดเรียงใกล้ที่สุดก่อน และบินข้ามไปนำทางอย่างแม่นยำสู่ Google Maps ทันที",
-    icon: <Compass className="h-12 w-12 text-brand-black fill-brand-yellow/10 shrink-0 mx-auto animate-pulse" />
+    title: "เริ่มใช้งานได้เลย",
+    desc: "แตะปุ่มด้านล่างเพื่อเปิดแผนที่หรือรายการ",
+    icon: <Compass className="h-10 w-10 text-brand-black fill-brand-yellow/10 shrink-0 mx-auto" />
   }
 ];
+
+// Interactive and extremely premium onboarding illustration canvas renderer
+const renderOnboardingIllustration = (step: number) => {
+  switch (step) {
+    case 0:
+      return (
+        <div className="relative w-full h-full flex items-center justify-center select-none">
+          {/* Map Grid Background Simulation */}
+          <div className="absolute inset-0 bg-[radial-gradient(#e5e5e5_1.5px,transparent_1.5px)] bg-size-[16px_16px] opacity-60 rounded-2xl" />
+          
+          {/* Ambient Pulse Glow */}
+          <div className="absolute w-24 h-24 rounded-full bg-brand-yellow/20 animate-ping duration-1000" />
+          
+          {/* Premium Floating Yellow Marker Card */}
+          <div className="relative flex flex-col items-center animate-scale-in">
+            <div className="w-16 h-16 bg-brand-yellow border-[3px] border-brand-black rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(255,222,89,0.35)] custom-marker-active">
+              <Zap className="h-8 w-8 text-brand-black fill-brand-black" />
+            </div>
+            {/* Tooltip label indicator */}
+            <div className="mt-2.5 bg-brand-black text-brand-yellow text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md border border-stone-800">
+              ปลั๊กเยอะมาก (Many)
+            </div>
+          </div>
+        </div>
+      );
+    case 1:
+      return (
+        <div className="relative w-full h-full flex items-center justify-center select-none">
+          <div className="absolute inset-0 bg-linear-to-tr from-amber-500/5 to-amber-500/10 rounded-2xl" />
+          {/* Split Comparison Cards */}
+          <div className="relative flex items-center justify-center gap-3.5 w-full px-4">
+            
+            {/* User Report Card */}
+            <div className="bg-white border border-amber-250 rounded-2xl p-3 shadow-md w-28 text-center animate-scale-in flex flex-col items-center">
+              <span className="h-6 w-6 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center text-[10px] mb-1.5 shrink-0">👤</span>
+              <p className="text-[9px] font-black text-stone-850 truncate w-full">รายงานชำรุด</p>
+              <span className="mt-1 inline-flex items-center gap-0.5 rounded-full bg-amber-100 border border-amber-200 px-2 py-0.5 text-[8px] font-extrabold text-amber-900 leading-none">
+                ⚠️ เสีย 2 จุด
+              </span>
+            </div>
+
+            {/* Connecting icon */}
+            <div className="text-stone-300 font-extrabold text-lg flex items-center justify-center shrink-0">
+              ⚡
+            </div>
+
+            {/* Owner Approved Card */}
+            <div className="bg-white border border-emerald-250 rounded-2xl p-3 shadow-md w-28 text-center animate-scale-in flex flex-col items-center">
+              <span className="h-6 w-6 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[10px] mb-1.5 shrink-0">🏢</span>
+              <p className="text-[9px] font-black text-stone-850 truncate w-full">อนุมัติซ่อมโดยร้าน</p>
+              <span className="mt-1 inline-flex items-center gap-0.5 rounded-full bg-emerald-100 border border-emerald-200 px-2 py-0.5 text-[8px] font-extrabold text-emerald-900 leading-none">
+                ✓ เรียบร้อย
+              </span>
+            </div>
+
+          </div>
+        </div>
+      );
+    case 2:
+      return (
+        <div className="relative w-full h-full flex items-center justify-center select-none">
+          {/* Map Grid Background Simulation */}
+          <div className="absolute inset-0 bg-[radial-gradient(#e5e5e5_1.5px,transparent_1.5px)] bg-size-[16px_16px] opacity-40 rounded-2xl" />
+          
+          {/* Compass Cockpit */}
+          <div className="relative flex items-center justify-center gap-4 w-full px-5 animate-scale-in">
+            {/* Radar Dial */}
+            <div className="relative w-16 h-16 rounded-full border-2 border-dashed border-stone-300 flex items-center justify-center shrink-0">
+              <div className="absolute inset-2 rounded-full border border-stone-200 flex items-center justify-center">
+                <Compass className="h-7 w-7 text-brand-black animate-spin" style={{ animationDuration: "12s" }} />
+              </div>
+              {/* Ping pointer */}
+              <div className="absolute top-1 right-2 w-2 h-2 rounded-full bg-brand-yellow shadow border border-brand-black" />
+            </div>
+            
+            {/* Direction text card */}
+            <div className="bg-brand-black text-white p-3 rounded-2xl border border-stone-800 shadow-md flex-1 text-left min-w-0">
+              <p className="text-[8px] font-bold text-brand-yellow uppercase tracking-widest leading-none mb-1">ระยะห่างจริง</p>
+              <h4 className="text-[12px] font-black tracking-tight leading-none mb-1">ห่างจากคุณ 120 ม.</h4>
+              <p className="text-[9px] text-stone-400 font-semibold leading-none mt-1">เดินเพียง 2 นาที 🚶</p>
+            </div>
+          </div>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -74,9 +163,9 @@ export default function Home() {
     lng: 100.555,
   });
 
-  // Landing Page & Onboarding walkthrough guide states
+  // Landing Page & Onboarding walkthrough guide states (onboarding set to false initially to avoid mount flicker!)
   const [showLanding, setShowLanding] = useState(true);
-  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
 
   // Trigger geolocation on mount automatically
@@ -208,16 +297,21 @@ export default function Home() {
           />
           
           {/* Scrollable Container with centered column layout */}
-          <div className="flex-1 overflow-y-auto pt-[162px] pb-[105px] px-4 custom-scrollbar bg-gradient-to-b from-stone-50 via-stone-100/40 to-stone-50">
+          <div 
+            className="flex-1 overflow-y-auto pt-40.5 px-4 custom-scrollbar bg-linear-to-b from-stone-50 via-stone-100/40 to-stone-50"
+            style={{ paddingBottom: "calc(max(env(safe-area-inset-bottom, 0px), 16px) + 115px)" }}
+          >
             <div className="max-w-md mx-auto">
               
               {/* Premium Brand Header Block incorporating logo.png */}
               <div className="flex flex-col items-center justify-center pt-2 pb-6 border-b border-stone-200/50 mb-5 animate-scale-in">
                 <div className="flex items-center gap-2.5">
-                  <img 
-                    src="/logo.png" 
-                    alt="TidPlug Logo" 
-                    className="h-10 w-10 object-contain select-none" 
+                  <Image
+                    src="/logo.png"
+                    alt="TidPlug Logo"
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 object-contain select-none"
                   />
                   <h1 className="font-extrabold text-stone-900 text-[22px] tracking-tight uppercase leading-none">
                     TIDPLUG
@@ -372,77 +466,86 @@ export default function Home() {
 
       {/* BRAND ONBOARDING WALKTHROUGH OVERLAY MODAL */}
       {showOnboarding && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-5 bg-stone-950/45 backdrop-blur-md animate-fade-in select-none">
-          <div className="glass-panel max-w-sm w-full rounded-[2.5rem] bg-white p-6 shadow-2xl relative border border-stone-200/50 flex flex-col justify-between items-center text-center animate-scale-in min-h-[420px]">
+        <div className="fixed inset-0 z-2000 flex items-center justify-center p-5 bg-stone-950/45 animate-fade-in select-none">
+          <div className="max-w-sm w-full rounded-[28px] bg-white p-5 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.25)] relative border border-stone-200 flex flex-col justify-between items-center text-center animate-scale-in min-h-110 max-h-[92vh] overflow-y-auto no-scrollbar">
             
+            {/* Instagram-style Top Segmented Progress Bar */}
+            <div className="w-full flex gap-1.5 mb-4 select-none shrink-0">
+              {onboardingSteps.map((_, i) => (
+                <div
+                  key={i}
+                  className="h-1 flex-1 rounded-full bg-stone-100 overflow-hidden"
+                >
+                  <div
+                    className={`h-full bg-linear-to-r from-amber-400 to-brand-yellow transition-all duration-500 rounded-full ${
+                      i < onboardingStep
+                        ? "w-full"
+                        : i === onboardingStep
+                        ? "w-full animate-pulse"
+                        : "w-0"
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+
             {/* Header Brand */}
-            <div className="w-full">
-              <div className="flex justify-center mb-3">
-                <img
+            <div className="w-full shrink-0 flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Image
                   src="/logo.png"
                   alt="TidPlug Logo"
-                  className="h-12 w-12 object-contain select-none animate-pulse"
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 object-contain select-none"
                 />
+                <div className="text-left">
+                  <h1 className="text-[14px] font-black text-stone-900 tracking-tight leading-none">TidPlug</h1>
+                  <span className="text-[8px] tracking-[0.2em] font-semibold text-stone-400 leading-none block mt-0.5">ตัวช่วยหาร้านมีปลั๊ก</span>
+                </div>
               </div>
-              <h2 className="text-[10px] uppercase tracking-widest font-extrabold text-stone-400">ยินดีต้อนรับสู่</h2>
-              <h1 className="text-[20px] font-extrabold text-stone-900 tracking-tight leading-none mt-1">TIDPLUG (ติดปลั๊ก)</h1>
               
-              <div className="h-[1px] bg-stone-100 my-4 w-full" />
+              <button 
+                onClick={() => setShowOnboarding(false)}
+                className="text-[10px] font-bold text-stone-500 hover:text-stone-700 transition-colors px-2.5 py-1 bg-stone-50 border border-stone-200 rounded-xl cursor-pointer select-none"
+              >
+                ข้าม
+              </button>
+            </div>
+
+            {/* Illustration Canvas */}
+            <div className="h-40 w-full flex items-center justify-center bg-stone-50 rounded-3xl border border-stone-200 p-4 overflow-hidden relative shrink-0">
+              {renderOnboardingIllustration(onboardingStep)}
             </div>
 
             {/* Slider Content */}
-            <div className="my-2 px-1 flex-1 flex flex-col justify-center">
-              <div className="mb-4">
-                {onboardingSteps[onboardingStep].icon}
-              </div>
-              <h3 className="font-extrabold text-stone-850 text-sm tracking-tight mb-2">
+            <div className="w-full text-center mt-4 mb-3 flex-1 flex flex-col justify-center min-h-21">
+              <h3 className="font-black text-stone-900 text-[15px] tracking-tight mb-2">
                 {onboardingSteps[onboardingStep].title}
               </h3>
-              <p className="text-xs text-stone-400 font-semibold leading-relaxed px-3">
+              <p className="text-[13px] text-stone-500 font-medium leading-relaxed px-2">
                 {onboardingSteps[onboardingStep].desc}
               </p>
             </div>
 
-            {/* Pagination Indicators & Buttons */}
-            <div className="w-full mt-6 space-y-4">
-              {/* Pagination Dots */}
-              <div className="flex justify-center gap-2">
-                {onboardingSteps.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      onboardingStep === i ? "w-6 bg-brand-black" : "w-2 bg-stone-200"
-                    }`}
-                  />
-                ))}
-              </div>
-
-              {/* Action buttons */}
-              <div className="flex items-center gap-3 w-full">
-                {onboardingStep < onboardingSteps.length - 1 ? (
-                  <>
-                    <button
-                      onClick={() => setShowOnboarding(false)}
-                      className="flex-1 py-3 text-xs font-extrabold text-stone-500 hover:text-stone-700 cursor-pointer select-none rounded-xl border border-stone-200 bg-stone-50/50 hover:bg-stone-50 transition-colors"
-                    >
-                      ข้ามสอน
-                    </button>
-                    <button
-                      onClick={() => setOnboardingStep((prev) => prev + 1)}
-                      className="flex-1 py-3 text-xs font-extrabold bg-brand-black text-brand-yellow rounded-xl shadow-md cursor-pointer select-none hover:bg-zinc-900 transition-colors"
-                    >
-                      หน้าถัดไป
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => setShowOnboarding(false)}
-                    className="w-full py-3 text-xs font-extrabold bg-brand-black text-brand-yellow rounded-xl shadow-md cursor-pointer select-none hover:bg-zinc-900 transition-colors animate-pulse"
-                  >
-                    เข้าสู่ระบบแผนที่พิกัด!
-                  </button>
-                )}
-              </div>
+            {/* Bottom Actions */}
+            <div className="w-full shrink-0 pt-0 mt-1">
+              {onboardingStep < onboardingSteps.length - 1 ? (
+                <button
+                  onClick={() => setOnboardingStep((prev) => prev + 1)}
+                  className="w-full py-3.5 text-sm font-black bg-brand-black text-brand-yellow rounded-2xl shadow-md cursor-pointer select-none hover:bg-zinc-900 transition-all active:scale-[0.98] tracking-wide flex items-center justify-center gap-1.5"
+                >
+                  <span>ถัดไป</span>
+                  <span className="text-[10px]">➜</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowOnboarding(false)}
+                  className="w-full py-3.5 text-sm font-black bg-brand-yellow text-brand-black rounded-2xl shadow-[0_6px_20px_rgba(255,222,89,0.22)] cursor-pointer select-none hover:brightness-105 transition-all active:scale-[0.98] tracking-wide font-sans"
+                >
+                  เริ่มใช้งาน
+                </button>
+              )}
             </div>
 
           </div>
@@ -451,17 +554,19 @@ export default function Home() {
 
       {/* FULLSCREEN BRAND LANDING PAGE OVERLAY (Styled directly after the laundry app example) */}
       <div
-        className={`fixed inset-0 z-[2500] bg-white flex flex-col justify-between items-center transition-transform duration-[750ms] ease-[cubic-bezier(0.85,0,0.15,1)] ${
-          showLanding ? "translate-y-0" : "-translate-y-full"
+        className={`fixed inset-0 z-2500 bg-white flex flex-col justify-between items-center transition-transform duration-750 ease-[cubic-bezier(0.85,0,0.15,1)] ${
+          showLanding ? "translate-y-0" : "-translate-y-full pointer-events-none invisible"
         }`}
       >
         {/* Top Bar Greeting */}
         <div className="w-full text-center pt-12 shrink-0 px-6">
           <div className="flex justify-center mb-3">
-            <img
+            <Image
               src="/logo.png"
               alt="TidPlug Logo"
-              className="h-14 w-14 object-contain animate-pulse select-none"
+              width={56}
+              height={56}
+              className="h-14 w-14 object-contain select-none"
             />
           </div>
           <h1 className="text-[28px] font-extrabold text-stone-900 tracking-tight leading-none">
@@ -470,7 +575,7 @@ export default function Home() {
           <h2 className="text-[22px] font-black text-brand-black tracking-tight mt-1.5 uppercase leading-none">
             TIDPLUG
           </h2>
-          <div className="h-[2px] bg-brand-yellow/60 w-16 mx-auto mt-4" />
+          <div className="h-0.5 bg-brand-yellow/60 w-16 mx-auto mt-4" />
         </div>
 
         {/* Central Digital Nomad 3D Hero Illustration */}
@@ -478,7 +583,10 @@ export default function Home() {
           <img
             src="/images/landing_hero.png"
             alt="TidPlug Landing Hero"
-            className="w-full max-h-[280px] object-contain select-none animate-scale-in"
+            width={960}
+            height={540}
+            className="w-full max-h-70 object-contain select-none animate-scale-in"
+            priority
           />
         </div>
 
@@ -497,8 +605,14 @@ export default function Home() {
 
           {/* Primary Action Button */}
           <button
-            onClick={() => setShowLanding(false)}
-            className="w-full bg-brand-yellow text-brand-black font-extrabold text-sm py-4 rounded-2xl shadow-lg active:scale-98 select-none transition-all hover:bg-yellow-400 cursor-pointer select-none animate-pulse font-sans tracking-wide"
+            onClick={() => {
+              setShowLanding(false);
+              // Sequenced onboarding pop-in to completely resolve any mount rendering flash/flicker!
+              setTimeout(() => {
+                setShowOnboarding(true);
+              }, 750); // Matches the slide-up duration perfectly!
+            }}
+            className="w-full bg-brand-yellow text-brand-black font-extrabold text-sm py-4 rounded-2xl shadow-lg active:scale-98 select-none transition-all hover:bg-yellow-400 cursor-pointer font-sans tracking-wide"
           >
             ค้นหาพิกัดปลั๊กเลย!
           </button>

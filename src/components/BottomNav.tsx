@@ -18,7 +18,10 @@ export default function BottomNav({ active, onChange }: Props) {
   const activeIndex = tabs.findIndex((t) => t.id === active);
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1010] w-[88%] max-w-xs pb-safe animate-fade-in-up">
+    <nav
+      className="fixed left-1/2 -translate-x-1/2 z-1010 w-[88%] max-w-xs animate-fade-in-up"
+      style={{ bottom: "calc(max(env(safe-area-inset-bottom, 0px), 16px) + 32px)" }}
+    >
       <div className="glass-panel relative rounded-full p-2 flex justify-between items-center shadow-[0_16px_40px_-8px_rgba(0,0,0,0.12)] border-white/60">
         
         {/* Sliding Pill Background (50/50 split width) */}
@@ -31,7 +34,7 @@ export default function BottomNav({ active, onChange }: Props) {
         />
 
         {/* Tab Buttons */}
-        {tabs.map(({ id, label, Icon }, index) => {
+        {tabs.map(({ id, label, Icon }) => {
           const isActive = active === id;
           return (
             <button

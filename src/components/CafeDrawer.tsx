@@ -94,7 +94,7 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
         <Drawer.Overlay className="fixed inset-0 bg-stone-950/45 z-[1040] backdrop-blur-sm transition-all duration-300" />
         
         {/* Raised Content to sit above overlay (z-[1050]) and centered nicely on large screens */}
-        <Drawer.Content className="fixed bottom-0 left-0 right-0 z-[1050] md:max-w-md md:left-1/2 md:-translate-x-1/2 md:right-auto md:w-full flex flex-col rounded-t-[2.5rem] bg-white shadow-2xl max-h-[85vh] pb-safe focus:outline-none overflow-hidden border border-stone-200/50 animate-scale-in">
+        <Drawer.Content className="fixed bottom-0 left-0 right-0 z-[1050] md:max-w-md md:left-1/2 md:-translate-x-1/2 md:right-auto md:w-full flex flex-col rounded-t-[2.5rem] bg-white shadow-2xl max-h-[85vh] focus:outline-none overflow-hidden border border-stone-200/50">
           
           {/* Drag Handle Container */}
           <div className="absolute top-3 left-0 right-0 flex justify-center z-25 shrink-0">
@@ -142,7 +142,10 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
               </div>
 
               {/* Scrollable details container */}
-              <div className="overflow-y-auto px-6 pt-4 pb-8 custom-scrollbar">
+              <div 
+                className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 custom-scrollbar"
+                style={{ paddingBottom: "calc(max(env(safe-area-inset-bottom, 0px), 20px) + 24px)" }}
+              >
                 
                 {/* Title and zone area */}
                 <div className="mb-4">
@@ -392,7 +395,7 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
 
               {/* USER PLUG REPORT SLIDE-UP OVERLAY CARD */}
               {isReporting && (
-                <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-30 p-6 flex flex-col justify-center animate-fade-in-up">
+                <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-30 p-6 pb-safe flex flex-col justify-center animate-fade-in-up">
                   <div className="max-w-xs mx-auto w-full space-y-4">
                     
                     {/* Form Title */}
