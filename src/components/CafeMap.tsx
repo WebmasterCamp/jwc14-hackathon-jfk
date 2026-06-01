@@ -86,7 +86,7 @@ export default function CafeMap({ cafes, selected, onSelect, userPos, onLocate, 
     const map = L.map(containerRef.current, {
       center: [13.745, 100.555],
       zoom: 13,
-      zoomControl: true, 
+      zoomControl: false, 
     });
 
     mapRef.current = map;
