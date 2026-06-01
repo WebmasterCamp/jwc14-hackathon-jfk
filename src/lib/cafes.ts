@@ -10,9 +10,10 @@ export type Cafe = {
   image: string;
   addedBy: "owner" | "user" | "system";
   brokenPlugsReport: {
-    count: number;
     reportedAt: string;
-    evidenceImg?: string;
+    zone: string;
+    issue: string;
+    note?: string;
     status: "pending" | "repaired";
   } | null;
 };
@@ -56,9 +57,10 @@ export const cafes: Cafe[] = [
     image: "/images/cafe_industrial.png",
     addedBy: "user",
     brokenPlugsReport: {
-      count: 2,
       reportedAt: "1 มิ.ย. 15:30",
-      evidenceImg: "/images/broken_plug.png",
+      zone: "โต๊ะริมหน้าต่าง",
+      issue: "ไฟไม่เข้าเลย 🔌",
+      note: "ตัวริมสุดด้านขวา",
       status: "pending",
     },
   },

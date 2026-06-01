@@ -45,8 +45,8 @@ const onboardingSteps = [
     icon: <Zap className="h-10 w-10 text-brand-black fill-brand-yellow shrink-0 mx-auto" />
   },
   {
-    title: "ดูข้อมูลสำคัญ",
-    desc: "เช็กเวลาเปิด ระยะทาง และสถานะของแต่ละร้าน",
+    title: "เช็คสถานะปลั๊กชำรุด",
+    desc: "เช็คปัญหาหรือการซ่อมแซมต่างๆก่อนเข้าใช้งาน",
     icon: <AlertTriangle className="h-10 w-10 text-amber-500 fill-amber-100 shrink-0 mx-auto" />
   },
   {
@@ -165,6 +165,18 @@ export default function Home() {
   const [showLanding, setShowLanding] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
+
+  // Auto-dismiss landing splash screen after 2.2 seconds (2200ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLanding(false);
+      const onboardTimer = setTimeout(() => {
+        setShowOnboarding(true);
+      }, 750); // wait 750ms for the slide-up transition of landing page to finish
+      return () => clearTimeout(onboardTimer);
+    }, 2200);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Trigger geolocation on mount automatically
   useEffect(() => {
@@ -380,7 +392,7 @@ export default function Home() {
                             {/* Damage Alert Flag */}
                             {hasDamage && (
                               <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 border border-amber-200 px-2 py-0.5 text-[9px] font-extrabold text-amber-900 shadow-sm leading-none shrink-0 animate-pulse">
-                                <span>⚠️ ปลั๊กชำรุด ({cafe.brokenPlugsReport?.count})</span>
+                                <span>⚠️ ปลั๊กเสีย: {cafe.brokenPlugsReport?.zone}</span>
                               </span>
                             )}
                           </div>
@@ -575,27 +587,21 @@ export default function Home() {
           {/* Small accent slide handle */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-stone-700/60" />
 
-          <h3 className="font-extrabold text-brand-yellow text-xs tracking-widest uppercase mb-2">
+          <h3 className="font-black text-brand-yellow text-[15px] tracking-widest uppercase mb-2">
             Specialty Plug Finder
           </h3>
           
           <h2 className="text-base font-extrabold text-white tracking-tight leading-snug px-3 mb-6">
-            ให้การหาที่ทำงานมีปลั๊กไฟเป็นเรื่องง่ายในทุกย่านคุณ
+            ให้การหาปลั๊กในคาเฟ่เป็นเรื่องง่ายสำหรับคุณ
           </h2>
 
-          {/* Primary Action Button */}
-          <button
-            onClick={() => {
-              setShowLanding(false);
-              // Sequenced onboarding pop-in to completely resolve any mount rendering flash/flicker!
-              setTimeout(() => {
-                setShowOnboarding(true);
-              }, 750); // Matches the slide-up duration perfectly!
-            }}
-            className="w-full bg-brand-yellow text-brand-black font-extrabold text-sm py-4 rounded-2xl shadow-lg active:scale-98 select-none transition-all hover:bg-yellow-400 cursor-pointer font-sans tracking-wide"
-          >
-            ค้นหาพิกัดปลั๊กเลย!
-          </button>
+          {/* Elegant minimalist auto-loading progress bar & state */}
+          <div className="w-full max-w-[200px] h-1.5 bg-stone-800 rounded-full overflow-hidden mx-auto mt-2 mb-4 relative shrink-0">
+            <div className="absolute top-0 left-0 h-full bg-brand-yellow rounded-full animate-pulse" style={{ width: '100%', animationDuration: '1.2s' }} />
+          </div>
+          <span className="text-[11px] font-bold text-stone-400 tracking-wider animate-pulse uppercase leading-none block shrink-0">
+            กำลังตรวจหาตำแหน่งพิกัดปลั๊ก...
+          </span>
         </div>
       </div>
 
