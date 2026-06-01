@@ -17,6 +17,8 @@ import {
   AlertTriangle,
   Lock,
   Plug,
+  MoreVertical,
+  Edit3,
 } from "lucide-react";
 import { Cafe, getHaversineDistance, formatDistance } from "@/lib/cafes";
 
@@ -52,7 +54,7 @@ const plugMeta: Record<
 };
 
 export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Props) {
-  const [copied, setCopied] = useState(false);
+  const [showActions, setShowActions] = useState(false);
   const meta = cafe ? plugMeta[cafe.plugs] : null;
 
   // Local drawer interactive states for Plug Reporting and Owner Resolution
@@ -67,13 +69,6 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
     ? getHaversineDistance(userPos.lat, userPos.lng, cafe.lat, cafe.lng)
     : null;
 
-  const handleCopy = () => {
-    if (!cafe) return;
-    navigator.clipboard.writeText(`${cafe.lat},${cafe.lng}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const hasDamage = cafe?.brokenPlugsReport && cafe.brokenPlugsReport.status === "pending";
 
   return (
@@ -85,6 +80,7 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
           setIsReporting(false);
           setIsOwnerPortal(false);
           setOwnerPasskey("");
+          setShowActions(false);
         }
       }}
     >
@@ -108,6 +104,58 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
           {cafe && meta && (
             <div className="flex flex-col h-full w-full relative">
               
+              {/* Premium Floating 3-dots actions menu button */}
+              <button 
+                onClick={() => setShowActions(!showActions)}
+                className="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md border border-stone-200/50 shadow-md flex items-center justify-center text-stone-700 hover:bg-white active:scale-95 transition-all select-none cursor-pointer"
+                title="เมนูการดำเนินการ"
+              >
+                <MoreVertical className="h-5 w-5 text-stone-700 shrink-0" />
+              </button>
+
+              {/* Actions Dropdown Menu */}
+              {showActions && (
+                <>
+                  {/* Tap-outside backdrop */}
+                  <div 
+                    className="fixed inset-0 z-[1055]" 
+                    onClick={() => setShowActions(false)} 
+                  />
+                  {/* Dropdown Box */}
+                  <div className="absolute top-14 right-4 z-[1060] w-48 rounded-2xl bg-white/95 backdrop-blur-md border border-stone-200/60 shadow-xl p-1.5 flex flex-col gap-0.5 animate-scale-in">
+                    
+                    {/* Suggest Edit Option */}
+                    <button
+                      onClick={() => {
+                        setShowActions(false);
+                        alert("ขอบคุณค่ะ! ระบบได้รับเรื่องเพื่อเตรียมเสนอแก้ไขพิกัดแล้วค่ะ");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-stone-700 hover:bg-stone-50 hover:text-stone-900 text-xs font-extrabold text-left transition-colors select-none cursor-pointer"
+                    >
+                      <Edit3 className="h-4 w-4 text-stone-500 shrink-0" />
+                      <span>เสนอให้แก้ไข</span>
+                    </button>
+                    
+                    {/* Divider */}
+                    <div className="h-[1px] bg-stone-100 mx-1.5" />
+
+                    {/* Report Damage Option */}
+                    <button
+                      onClick={() => {
+                        setShowActions(false);
+                        setBrokenCount(1);
+                        setIsReporting(true);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-amber-700 hover:bg-amber-50/50 text-xs font-extrabold text-left transition-colors select-none cursor-pointer"
+                    >
+                      <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                      <span>รายงานปลั๊กชำรุด</span>
+                    </button>
+
+                  </div>
+                </>
+              )}
+
               {/* Premium Cafe Atmosphere Hero Image Header */}
               <div className="relative h-44 w-full overflow-hidden shrink-0 flex items-end p-5">
                 <img
@@ -261,57 +309,17 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
                 <div className="border-t border-stone-100 my-5" />
 
                 {/* Interactive Action Buttons */}
-                <div className="flex gap-3 mb-4">
-                  {/* Google Maps Route Button (Solid Black and Yellow text!) */}
+                <div className="mb-4">
+                  {/* Google Maps Route Button (Solid Black and Yellow text, full width!) */}
                   <a
                     href={`https://www.google.com/maps/dir/?api=1&destination=${cafe.lat},${cafe.lng}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-brand-black text-brand-yellow font-extrabold text-sm py-3 px-4 shadow-md hover:bg-zinc-900 transition-all duration-300 transform active:scale-98 select-none"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-black text-brand-yellow font-extrabold text-sm py-3 px-4 shadow-md hover:bg-zinc-900 transition-all duration-300 transform active:scale-98 select-none"
                   >
                     <Navigation className="h-4 w-4 fill-brand-yellow text-brand-yellow" />
                     <span>นำทางแผนที่</span>
                   </a>
-
-                  {/* Copy Coordinate Button */}
-                  <button
-                    onClick={handleCopy}
-                    className={`flex items-center justify-center gap-2 rounded-xl border font-extrabold text-sm py-3 px-4 transition-all duration-300 transform active:scale-98 select-none cursor-pointer ${
-                      copied
-                        ? "bg-emerald-50 text-emerald-800 border-emerald-300"
-                        : "bg-white text-stone-700 border-stone-200 hover:bg-stone-50 hover:text-stone-900"
-                    }`}
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4 text-emerald-600 animate-scale-in" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                    <span className="min-w-[65px] text-center">
-                      {copied ? "คัดลอกแล้ว!" : "คัดลอกพิกัด"}
-                    </span>
-                  </button>
-                </div>
-
-                {/* Secondary Action Grid */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  {/* Suggest Edit Button */}
-                  <button className="flex items-center justify-center gap-1.5 rounded-xl border border-stone-200 px-3 py-3 text-xs font-bold text-stone-500 hover:border-brand-black hover:text-brand-black hover:bg-stone-50 transition-all cursor-pointer select-none">
-                    <Plus className="h-3.5 w-3.5" />
-                    <span>เสนอแก้นิยาม</span>
-                  </button>
-
-                  {/* Crowdsourced Plug Damage Report Button */}
-                  <button
-                    onClick={() => {
-                      setBrokenCount(1);
-                      setIsReporting(true);
-                    }}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-amber-300 bg-amber-50/10 px-3 py-3 text-xs font-bold text-amber-700 hover:border-amber-400 hover:bg-amber-50/30 transition-all cursor-pointer select-none"
-                  >
-                    <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
-                    <span>รายงานปลั๊กชำรุด</span>
-                  </button>
                 </div>
 
                 {/* Cafe Owner Repair Resolving console panel */}
