@@ -3,7 +3,6 @@ export type Cafe = {
   name: string;
   area: string;
   plugs: "many" | "some" | "few";
-  wifi: boolean;
   openHours: string;
   tags: string[];
   lat: number;
@@ -24,7 +23,6 @@ export const cafes: Cafe[] = [
     name: "Roots Coffee Roaster",
     area: "สีลม",
     plugs: "many",
-    wifi: true,
     openHours: "07:00–19:00",
     tags: ["เงียบ", "แอร์เย็น", "โต๊ะใหญ่"],
     lat: 13.7234,
@@ -38,7 +36,6 @@ export const cafes: Cafe[] = [
     name: "Brave Roasters",
     area: "อารีย์",
     plugs: "many",
-    wifi: true,
     openHours: "08:00–18:00",
     tags: ["นั่งนาน", "ปลั๊กทุกโต๊ะ"],
     lat: 13.7749,
@@ -52,9 +49,8 @@ export const cafes: Cafe[] = [
     name: "Factory Coffee",
     area: "ทองหล่อ",
     plugs: "some",
-    wifi: true,
     openHours: "08:00–20:00",
-    tags: ["บรรยากาศดี", "wifi เร็ว"],
+    tags: ["บรรยากาศดี"],
     lat: 13.7291,
     lng: 100.5814,
     image: "/images/cafe_industrial.png",
@@ -71,7 +67,6 @@ export const cafes: Cafe[] = [
     name: "% Arabica",
     area: "เอกมัย",
     plugs: "few",
-    wifi: false,
     openHours: "08:00–18:00",
     tags: ["ดีไซน์สวย", "คนเยอะ"],
     lat: 13.7223,
@@ -85,7 +80,6 @@ export const cafes: Cafe[] = [
     name: "Ink & Lion Cafe",
     area: "อนุสาวรีย์",
     plugs: "many",
-    wifi: true,
     openHours: "10:00–22:00",
     tags: ["นั่งนาน", "เปิดดึก", "ปลั๊กเยอะ"],
     lat: 13.7649,
@@ -99,7 +93,6 @@ export const cafes: Cafe[] = [
     name: "Too Fast To Sleep",
     area: "สุขุมวิท",
     plugs: "many",
-    wifi: true,
     openHours: "00:00–24:00",
     tags: ["เปิด 24ชม", "remote-friendly"],
     lat: 13.7431,
@@ -111,9 +104,9 @@ export const cafes: Cafe[] = [
 ];
 
 export const plugLabel: Record<Cafe["plugs"], string> = {
-  many: "ปลั๊กเยอะ",
-  some: "ปลั๊กพอมี",
-  few: "ปลั๊กน้อย",
+  many: "10+ จุดชาร์จ",
+  some: "5+ จุดชาร์จ",
+  few: "1-2 จุดชาร์จ",
 };
 
 export const plugColor: Record<Cafe["plugs"], string> = {

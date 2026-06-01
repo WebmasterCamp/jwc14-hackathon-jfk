@@ -1,14 +1,12 @@
 "use client";
 
-import { Search, X, Wifi, Zap, Award, Clock } from "lucide-react";
+import { Search, X, Zap, Award, Clock } from "lucide-react";
 
 type Props = {
   value: string;
   onChange: (v: string) => void;
   filterPlugs: boolean;
   onFilterPlugsChange: (v: boolean) => void;
-  filterWifi: boolean;
-  onFilterWifiChange: (v: boolean) => void;
   selectedTag: string | null;
   onSelectedTagChange: (tag: string | null) => void;
 };
@@ -18,8 +16,6 @@ export default function SearchBar({
   onChange,
   filterPlugs,
   onFilterPlugsChange,
-  filterWifi,
-  onFilterWifiChange,
   selectedTag,
   onSelectedTagChange,
 }: Props) {
@@ -72,19 +68,6 @@ export default function SearchBar({
           >
             <Zap className={`h-3 w-3 ${filterPlugs ? "fill-brand-yellow text-brand-yellow" : ""}`} />
             <span>ปลั๊กเยอะ</span>
-          </button>
-
-          {/* Wifi Filter */}
-          <button
-            onClick={() => onFilterWifiChange(!filterWifi)}
-            className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-full text-xs font-extrabold border transition-all duration-200 cursor-pointer select-none ${
-              filterWifi
-                ? "bg-brand-black text-brand-yellow border-brand-black shadow-sm"
-                : "bg-white text-stone-500 border-stone-200 hover:border-stone-300 hover:text-stone-700"
-            }`}
-          >
-            <Wifi className={`h-3 w-3 ${filterWifi ? "text-brand-yellow" : ""}`} />
-            <span>มี WiFi</span>
           </button>
 
           {/* Tag "นั่งนาน" Filter */}

@@ -5,8 +5,6 @@ import { Drawer } from "vaul";
 import {
   MapPin,
   Clock,
-  Wifi,
-  WifiOff,
   Zap,
   ZapOff,
   ChevronRight,
@@ -18,6 +16,7 @@ import {
   CheckCircle,
   AlertTriangle,
   Lock,
+  Plug,
 } from "lucide-react";
 import { Cafe, getHaversineDistance, formatDistance } from "@/lib/cafes";
 
@@ -33,19 +32,19 @@ const plugMeta: Record<
   { label: string; color: string; bg: string; icon: React.ReactNode }
 > = {
   many: {
-    label: "ปลั๊กเยอะมาก",
+    label: "10+ จุดชาร์จ",
     color: "text-stone-900 border-brand-yellow bg-brand-yellow/30",
     bg: "bg-brand-yellow/10",
     icon: <Zap className="h-3.5 w-3.5 fill-brand-black text-brand-black" />,
   },
   some: {
-    label: "ปลั๊กพอมี",
+    label: "5+ จุดชาร์จ",
     color: "text-orange-900 border-orange-200 bg-orange-50",
     bg: "bg-orange-50",
     icon: <Zap className="h-3.5 w-3.5 fill-orange-500 text-orange-500" />,
   },
   few: {
-    label: "ปลั๊กน้อย",
+    label: "1-2 จุดชาร์จ",
     color: "text-stone-700 border-stone-300 bg-stone-100",
     bg: "bg-stone-100",
     icon: <ZapOff className="h-3.5 w-3.5 text-stone-500" />,
@@ -121,23 +120,13 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/40 to-transparent z-1" />
                 
                 {/* Badges inside Hero */}
-                <div className="relative z-10 w-full flex items-center justify-between">
+                <div className="relative z-10 w-full flex items-center">
                   <span
                     className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-extrabold ${meta.color} ${meta.bg} shadow-sm backdrop-blur-md`}
                   >
                     {meta.icon}
                     {meta.label}
                   </span>
-                  
-                  {cafe.wifi ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-black text-brand-yellow border border-brand-black px-3 py-1 text-xs font-extrabold shadow-sm backdrop-blur-md">
-                      <Wifi className="h-3.5 w-3.5" /> High-Speed WiFi
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-stone-100 border border-stone-200 text-stone-500 px-3 py-1 text-xs font-extrabold shadow-sm">
-                      <WifiOff className="h-3.5 w-3.5" /> ไม่มี WiFi
-                    </span>
-                  )}
                 </div>
               </div>
 
@@ -226,26 +215,10 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
                     label="เวลาให้บริการ"
                     value={cafe.openHours}
                   />
-                  <InfoTile
-                    icon={
-                      cafe.wifi ? (
-                        <Wifi className="h-4 w-4 text-emerald-600" />
-                      ) : (
-                        <WifiOff className="h-4 w-4 text-stone-400" />
-                      )
-                    }
-                    label="ความแรง WiFi"
-                    value={cafe.wifi ? "แรงฟรี" : "ไม่มี WiFi"}
-                  />
-                  <InfoTile
-                    icon={<Zap className="h-4 w-4 text-brand-black fill-brand-yellow/10" />}
-                    label="จำนวนปลั๊กไฟ"
-                    value={hasDamage && cafe.brokenPlugsReport ? `${meta.label} (เสีย ${cafe.brokenPlugsReport.count})` : meta.label}
-                  />
                   
                   {distance !== null ? (
                     <InfoTile
-                      icon={<Compass className="h-4 w-4 text-brand-black animate-pulse" />}
+                      icon={<Compass className="h-4 w-4 text-brand-black" />}
                       label="ระยะห่างจากคุณ"
                       value={formatDistance(distance)}
                     />
@@ -256,6 +229,13 @@ export default function CafeDrawer({ cafe, onClose, userPos, onUpdateCafe }: Pro
                       value={`${cafe.lat.toFixed(4)}, ${cafe.lng.toFixed(4)}`}
                     />
                   )}
+
+                  <InfoTile
+                    icon={<Plug className="h-4 w-4 text-brand-black" strokeWidth={2.4} />}
+                    label="จำนวนปลั๊กไฟ"
+                    value={hasDamage && cafe.brokenPlugsReport ? `${meta.label} (เสีย ${cafe.brokenPlugsReport.count})` : meta.label}
+                    className="col-span-2"
+                  />
                 </div>
 
                 {/* Amenities Tags */}
@@ -525,13 +505,15 @@ function InfoTile({
   icon,
   label,
   value,
+  className = "",
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
+  className?: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-stone-50 border border-stone-200/50 p-3 shadow-sm hover:shadow transition-shadow">
+    <div className={`flex items-center gap-3 rounded-xl bg-stone-50 border border-stone-200/50 p-3 shadow-sm hover:shadow transition-shadow ${className}`}>
       <div className="rounded-lg bg-white p-1.5 border border-stone-100 shadow-sm shrink-0">
         {icon}
       </div>

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
-import { Clock, MapPin, Wifi, WifiOff, Zap, ZapOff, Coffee, CheckCircle, AlertTriangle, Compass } from "lucide-react";
+import { Clock, MapPin, Zap, ZapOff, Coffee, CheckCircle, AlertTriangle, Compass, Plug } from "lucide-react";
 import { cafes, Cafe, getHaversineDistance, formatDistance } from "@/lib/cafes";
 import CafeDrawer from "@/components/CafeDrawer";
 import SearchBar from "@/components/SearchBar";
@@ -18,19 +18,19 @@ const plugMeta: Record<
   { label: string; color: string; bg: string; icon: React.ReactNode }
 > = {
   many: {
-    label: "ปลั๊กเยอะมาก",
+    label: "10+ จุดชาร์จ",
     color: "text-stone-900 border-brand-yellow bg-brand-yellow/30",
     bg: "bg-brand-yellow/10",
     icon: <Zap className="h-3 w-3 fill-brand-black text-brand-black" />,
   },
   some: {
-    label: "ปลั๊กพอมี",
+    label: "5+ จุดชาร์จ",
     color: "text-orange-900 border-orange-255 bg-orange-50",
     bg: "bg-orange-50",
     icon: <Zap className="h-3 w-3 fill-orange-500 text-orange-500" />,
   },
   few: {
-    label: "ปลั๊กน้อย",
+    label: "1-2 จุดชาร์จ",
     color: "text-stone-700 border-stone-200 bg-stone-100",
     bg: "bg-stone-100",
     icon: <ZapOff className="h-3 w-3 text-stone-400" />,
@@ -41,7 +41,7 @@ const plugMeta: Record<
 const onboardingSteps = [
   {
     title: "ค้นหาร้านใกล้ตัว",
-    desc: "ดูร้านที่มีปลั๊กและ WiFi รอบตัวคุณได้ทันที",
+    desc: "ดูร้านที่มีปลั๊กให้บริการชาร์จรอบตัวคุณได้ทันที",
     icon: <Zap className="h-10 w-10 text-brand-black fill-brand-yellow shrink-0 mx-auto" />
   },
   {
@@ -65,17 +65,16 @@ const renderOnboardingIllustration = (step: number) => {
           {/* Map Grid Background Simulation */}
           <div className="absolute inset-0 bg-[radial-gradient(#e5e5e5_1.5px,transparent_1.5px)] bg-size-[16px_16px] opacity-60 rounded-2xl" />
           
-          {/* Ambient Pulse Glow */}
-          <div className="absolute w-24 h-24 rounded-full bg-brand-yellow/20 animate-ping duration-1000" />
-          
           {/* Premium Floating Yellow Marker Card */}
           <div className="relative flex flex-col items-center animate-scale-in">
-            <div className="w-16 h-16 bg-brand-yellow border-[3px] border-brand-black rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(255,222,89,0.35)] custom-marker-active">
-              <Zap className="h-8 w-8 text-brand-black fill-brand-black" />
+            <div className="relative w-16 h-16 bg-brand-yellow border-[3px] border-brand-black rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(255,222,89,0.35)]">
+              <Plug className="h-8 w-8 text-brand-black shrink-0" strokeWidth={3.2} />
+              {/* Bottom-right plug abundance indicator dot (emerald green for many) */}
+              <div className="absolute bottom-0 right-0 w-4.5 h-4.5 rounded-full border-2 border-white bg-emerald-500 shadow-sm z-20" />
             </div>
             {/* Tooltip label indicator */}
             <div className="mt-2.5 bg-brand-black text-brand-yellow text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md border border-stone-800">
-              ปลั๊กเยอะมาก (Many)
+              10+ จุดชาร์จ (Many)
             </div>
           </div>
         </div>
@@ -151,7 +150,6 @@ export default function Home() {
 
   // Advanced Filtering States
   const [filterPlugs, setFilterPlugs] = useState(false);
-  const [filterWifi, setFilterWifi] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   // Dynamic state hooks for cafes
@@ -214,11 +212,6 @@ export default function Home() {
         return false;
       }
 
-      // Wifi filter
-      if (filterWifi && !c.wifi) {
-        return false;
-      }
-
       // Selected Tag filter
       if (selectedTag && !c.tags.includes(selectedTag)) {
         return false;
@@ -237,7 +230,7 @@ export default function Home() {
     }
 
     return list;
-  }, [query, filterPlugs, filterWifi, selectedTag, userPos, cafesList]);
+  }, [query, filterPlugs, selectedTag, userPos, cafesList]);
 
   // Open Help callback
   const handleShowHelp = () => {
@@ -256,8 +249,6 @@ export default function Home() {
             onChange={setQuery}
             filterPlugs={filterPlugs}
             onFilterPlugsChange={setFilterPlugs}
-            filterWifi={filterWifi}
-            onFilterWifiChange={setFilterWifi}
             selectedTag={selectedTag}
             onSelectedTagChange={setSelectedTag}
           />
@@ -290,8 +281,6 @@ export default function Home() {
             onChange={setQuery}
             filterPlugs={filterPlugs}
             onFilterPlugsChange={setFilterPlugs}
-            filterWifi={filterWifi}
-            onFilterWifiChange={setFilterWifi}
             selectedTag={selectedTag}
             onSelectedTagChange={setSelectedTag}
           />
@@ -328,12 +317,11 @@ export default function Home() {
                   <span className="text-[11px] font-extrabold text-stone-400 tracking-wider uppercase">
                     {userPos ? "ใกล้ตัวคุณที่สุด" : "คาเฟ่ที่ผ่านตัวกรอง"} ({filtered.length})
                   </span>
-                  {(filterPlugs || filterWifi || selectedTag || query) && (
+                  {(filterPlugs || selectedTag || query) && (
                     <button
                       onClick={() => {
                         setQuery("");
                         setFilterPlugs(false);
-                        setFilterWifi(false);
                         setSelectedTag(null);
                       }}
                       className="text-[11px] font-extrabold text-brand-black hover:text-stone-850 cursor-pointer select-none transition-colors"
@@ -419,14 +407,6 @@ export default function Home() {
                           <span className="flex items-center gap-1.5">
                             <Clock className="h-3.5 w-3.5 text-stone-400 shrink-0" />
                             {cafe.openHours}
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            {cafe.wifi ? (
-                              <Wifi className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                            ) : (
-                              <WifiOff className="h-3.5 w-3.5 text-stone-300 shrink-0" />
-                            )}
-                            {cafe.wifi ? "มี WiFi แรง" : "ไม่มี WiFi"}
                           </span>
                         </div>
 
@@ -586,7 +566,7 @@ export default function Home() {
             width={960}
             height={540}
             className="w-full max-h-70 object-contain select-none animate-scale-in"
-            priority
+            
           />
         </div>
 
